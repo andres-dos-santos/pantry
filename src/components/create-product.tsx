@@ -55,8 +55,12 @@ export function CreateProduct() {
 
   return (
     <>
-      <button onClick={() => setShow((prev) => !prev)}>
-        <Plus className="w-5 h-5" />
+      <button
+        onClick={() => setShow((prev) => !prev)}
+        className="flex items-center justify-center space-x-1 h-10 -tracking-wide text-[12px] uppercase font-medium pl-4 pr-5 hover:bg-zinc-200/50 transition-all duration-200 bg-zinc-100 rounded-full"
+      >
+        <Plus className="w-4 h-4" />
+        <span>Adicionar produto</span>
       </button>
 
       <aside
@@ -64,7 +68,7 @@ export function CreateProduct() {
         className="data-[show=true]:flex data-[show=false]:hidden flex-col bg-white fixed right-0 top-0 bottom-0 sm:w-96 w-full sm:border-l border-l-zinc-200"
       >
         <header className="flex items-center justify-between w-full p-5 border-b border-b-zinc-200">
-          <strong className="text-[15px] sm:text-[24px] font-medium uppercase -tracking-wide">
+          <strong className="text-[15px] sm:text-[17px] font-medium uppercase -tracking-wide">
             Adicione um produto a despensa
           </strong>
 
