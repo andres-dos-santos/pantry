@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -57,34 +57,36 @@ export function CreateProduct() {
     <>
       <button
         onClick={() => setShow((prev) => !prev)}
-        className="flex items-center justify-center space-x-1 h-10 -tracking-wide text-[12px] uppercase font-medium pl-4 pr-5 hover:bg-zinc-200/50 transition-all duration-200 bg-zinc-100 rounded-full"
+        className="flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 min-w-[3.5rem] w-14 rounded-full"
       >
-        <Plus className="w-4 h-4" />
-        <span>Adicionar produto</span>
+        <Plus className="w-5 h-5" />
       </button>
 
       <aside
         data-show={show}
-        className="data-[show=true]:flex data-[show=false]:hidden flex-col bg-white fixed right-0 top-0 bottom-0 sm:w-96 w-full sm:border-l border-l-zinc-200"
+        className="data-[show=true]:flex data-[show=false]:invisible transition-all duration-300 data-[show=false]:top-full sm:max-w-[400px] data-[show=true]:top-0 flex-col bg-white fixed right-0 bottom-0 h-screen z-10 w-full sm:border-l border-l-zinc-200"
       >
-        <header className="flex items-center justify-between w-full p-5 border-b border-b-zinc-200">
-          <strong className="text-[15px] sm:text-[17px] font-medium uppercase -tracking-wide">
-            Adicione um produto a despensa
-          </strong>
-
-          <button onClick={() => setShow((prev) => !prev)}>
-            <X className="w-5 h-5" />
+        <header className="flex flex-col w-full p-10 sm:p-5 items-center justify-center">
+          <button
+            onClick={() => setShow((prev) => !prev)}
+            className="flex items-center justify-center h-5 mb-10 w-full"
+          >
+            <div className="h-[2px] rounded-full w-[25%] bg-zinc-800"></div>
           </button>
+
+          <span className="text-[13px] font-medium">
+            ADICIONE UM PRODUTO A SUA DESPENSA
+          </span>
         </header>
 
         <form
           action=""
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col space-y-2.5 p-5"
+          className="flex flex-col space-y-2.5 px-10 sm:px-5"
         >
           <input
             type="text"
-            className="bg-zinc-100/50 h-8 w-full text-[12px] font-medium uppercase border border-zinc-200 outline-none focus:border-zinc-800 px-2 -tracking-wide"
+            className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
             placeholder="Nome com a marca"
             {...register('product_name')}
           />
@@ -92,13 +94,13 @@ export function CreateProduct() {
           <section className="flex items-center space-x-2.5">
             <input
               type="text"
-              className="bg-zinc-100/50 h-8 w-full text-[12px] font-medium uppercase border border-zinc-200 outline-none focus:border-zinc-800 px-2 -tracking-wide"
+              className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
               placeholder="Quantidade"
               {...register('product_quantity', { valueAsNumber: true })}
             />
             <input
               type="text"
-              className="bg-zinc-100/50 h-8 w-full text-[12px] font-medium uppercase border border-zinc-200 outline-none focus:border-zinc-800 px-2 -tracking-wide"
+              className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
               placeholder="Sufixo"
               {...register('product_suffix')}
             />
@@ -106,12 +108,12 @@ export function CreateProduct() {
 
           <input
             type="text"
-            className="bg-zinc-100/50 h-8 w-full text-[12px] font-medium uppercase border border-zinc-200 outline-none focus:border-zinc-800 px-2 -tracking-wide"
+            className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
             placeholder="Tag"
             {...register('product_tag')}
           />
 
-          {/** <div className="bg-zinc-100/50 h-8 w-full flex items-center px-2 text-[12px] font-medium uppercase border border-zinc-200 focus-within:border-zinc-800">
+          {/** <divrounded-2xl  className="bg-zinc-100/50 h-12 w-full flex items-center px-2 -[12px] font-medium uppercase border border-zinc-200 focus-within:borde4-zinc-800" placeholder:uppercase>
             <span className="font-semibold">R$</span>
             <input
               className="h-6 w-full mb-0.5 ml-1 outline-none -tracking-wide"
@@ -125,7 +127,7 @@ export function CreateProduct() {
             name="expiration_date"
             render={({ field }) => (
               <MaskedInput
-                className="bg-zinc-100/50 h-8 w-full text-[12px] font-medium uppercase border border-zinc-200 outline-none focus:border-zinc-800 px-2 -tracking-wide"
+                className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
                 placeholder="Data de validade"
                 onChange={field.onChange}
                 value={field.value}
@@ -143,7 +145,7 @@ export function CreateProduct() {
             )}
           />
 
-          <button className="flex items-center justify-center border border-zinc-800 bg-zinc-800 h-8 mt-10 w-full">
+          <button className="flex items-center justify-center border border-zinc-800 bg-zinc-800 h-12 rounded-2xl mt-10 w-full">
             <span className="text-[12px] font-semibold -tracking-wider text-white">
               {loading ? 'CARREGANDO' : 'ADICIONAR PRODUTO'}
             </span>
