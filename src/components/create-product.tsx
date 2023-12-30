@@ -30,15 +30,20 @@ export function CreateProduct() {
   const [show, setShow] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const { handleSubmit, register, control, reset } = useForm<SchemaInput>({
-    resolver: zodResolver(Schema),
-  })
+  const { handleSubmit, register, control, reset, setValue, watch } =
+    useForm<SchemaInput>({
+      resolver: zodResolver(Schema),
+    })
 
   async function onSubmit(input: SchemaInput) {
     try {
       setLoading(true)
 
-      await supabase.from('products').insert(input)
+      await supabase.from('products').insert({
+        ...input,
+        tag: watch('tag'),
+        quantity_suffix: watch('quantity_suffix'),
+      })
 
       toast({ message: 'Criado com sucesso!', type: 'success' })
 
@@ -85,34 +90,64 @@ export function CreateProduct() {
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col px-10 sm:px-5"
         >
-          <input
-            type="text"
-            className="mb-2.5 rounded-2xl capitalize bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-            placeholder="Nome com a marca"
-            {...register('name')}
-          />
-
-          <section className="flex items-center space-x-2.5">
+          <label htmlFor="" className="mb-2.5">
+            <span className="text-xs ml-2 mb-1 font-medium">NOME E MARCA</span>
             <input
               type="text"
-              className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+              className="rounded-2xl capitalize bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+              placeholder="Nome com a marca"
+              {...register('name')}
+            />
+          </label>
+
+          <label htmlFor="" className="mb-2.5">
+            <span className="text-xs ml-2 mb-1 font-medium">QUANTIDADE</span>
+            <input
+              type="text"
+              className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
               placeholder="Quantidade"
               {...register('quantity', { valueAsNumber: true })}
             />
-            <input
-              type="text"
-              className="mb-2.5 uppercase rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-              placeholder="Sufixo"
-              {...register('quantity_suffix')}
-            />
-          </section>
+          </label>
 
-          <input
+          <label htmlFor="" className="mb-2.5">
+            <span className="text-xs ml-2 mb-1 font-medium">SUFIXO</span>
+            <div className="flex flex-wrap items-center space-x-2">
+              {['KG', 'GR', 'PC', 'UN', 'LT'].map((i) => (
+                <button
+                  key={i}
+                  data-selected={watch('quantity_suffix') === i}
+                  onClick={() => setValue('quantity_suffix', i)}
+                  className="data-[selected=true]:bg-zinc-900 data-[selected=true]:text-white bg-zinc-100 rounded-xl h-10 w-10 text-xs font-medium flex items-center justify-center -tracking-wide"
+                >
+                  {i}
+                </button>
+              ))}
+            </div>
+          </label>
+
+          <label htmlFor="" className="mb-2.5">
+            <span className="text-xs ml-2 mb-1 font-medium">TAG</span>
+            <div className="flex flex-wrap items-center space-x-2">
+              {['alimentação', 'limpeza', 'outros'].map((i) => (
+                <button
+                  key={i}
+                  onClick={() => setValue('tag', i)}
+                  data-selected={watch('tag') === i}
+                  className="data-[selected=true]:bg-zinc-900 data-[selected=true]:text-white bg-zinc-100 rounded-xl h-10 px-4 uppercase text-xs font-medium flex items-center justify-center -tracking-wide"
+                >
+                  {i}
+                </button>
+              ))}
+            </div>
+          </label>
+
+          {/** <input
             type="text"
             className="mb-2.5 lowercase rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
             placeholder="Tag"
             {...register('tag')}
-          />
+          /> */}
 
           {/** <divmb-2.5 rounded-2xl  className="bg-zinc-100/50 h-12 w-full flex items-center px-2 -[12px] font-medium uppercase border border-zinc-200 focus-within:borde4-zinc-800" placeholder:uppercase>
             <span className="font-semibold">R$</span>
@@ -123,28 +158,33 @@ export function CreateProduct() {
             />
           </div> */}
 
-          <Controller
-            control={control}
-            name="expirated_at"
-            render={({ field }) => (
-              <MaskedInput
-                className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-                placeholder="Data de validade"
-                onChange={field.onChange}
-                value={field.value}
-                mask={[
-                  /[0-9]/,
-                  /[0-9]/,
-                  '/',
-                  /[0-9]/,
-                  /[0-9]/,
-                  '/',
-                  /[0-9]/,
-                  /[0-9]/,
-                ]}
-              />
-            )}
-          />
+          <label htmlFor="" className="mb-2.5">
+            <span className="text-xs ml-2 mb-1 font-medium">
+              DATA DE VALIDADE
+            </span>
+            <Controller
+              control={control}
+              name="expirated_at"
+              render={({ field }) => (
+                <MaskedInput
+                  className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+                  placeholder="Data de validade"
+                  onChange={field.onChange}
+                  value={field.value}
+                  mask={[
+                    /[0-9]/,
+                    /[0-9]/,
+                    '/',
+                    /[0-9]/,
+                    /[0-9]/,
+                    '/',
+                    /[0-9]/,
+                    /[0-9]/,
+                  ]}
+                />
+              )}
+            />
+          </label>
 
           <button className="mt-5 flex items-center justify-center border border-zinc-800 bg-zinc-800 h-12 mb-2.5 rounded-2xl w-full">
             <span className="text-[12px] font-semibold -tracking-wider text-white">

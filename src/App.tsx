@@ -5,10 +5,10 @@ import { supabase } from './lib/supabase'
 
 import { CreateProduct } from './components/create-product'
 import { DatePicker } from './components/date-picker'
-
-import 'dayjs/locale/pt-br'
 import { UpdateProduct } from './components/update-product'
 import { ShoppingList } from './components/shopping-list'
+
+import 'dayjs/locale/pt-br'
 
 interface Product {
   id: number
@@ -106,7 +106,7 @@ export default function App() {
               {pantry?.map((i) => (
                 <li
                   key={i.id}
-                  className="cursor-pointer border border-zinc-200 rounded-2xl p-4 min-h-[100px] w-full relative"
+                  className="group hover:border-zinc-800 cursor-pointer border border-zinc-200 rounded-2xl p-4 min-h-[100px] w-full relative"
                   onClick={() => setProduct(i)}
                 >
                   <section className="flex items-center justify-between">
@@ -119,7 +119,7 @@ export default function App() {
                       </span>
                     </div>
 
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="group-hover:translate-x-2 transition-all duration-300 w-4 h-4" />
                   </section>
 
                   <div className="flex items-center my-2.5 space-x-2">
