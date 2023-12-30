@@ -219,14 +219,20 @@ export function UpdateProduct({ product, down }: Props) {
         ) : (
           <div className="px-10 sm:px-14">
             <div className="flex items-center mb-10 space-x-2">
-              {product.usage_quantity < product.quantity ? (
-                <button
-                  onClick={updateUsage}
-                  className="disabled:cursor-not-allowed flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 rounded-full"
-                >
-                  Usar {product.usage_quantity + 1} de {product.quantity}
-                </button>
-              ) : null}
+              <button
+                onClick={updateUsage}
+                data-add={product.usage_quantity <= product.quantity}
+                className="data-[add=true]:border-zinc-800 data-[add=true]:bg-zinc-900 data-[add=true]:text-white disabled:cursor-not-allowed flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 rounded-full"
+              >
+                {product.usage_quantity < product.quantity ? (
+                  `Usar ${product.usage_quantity + 1} de ${product.quantity}`
+                ) : (
+                  <>
+                    <Plus className="h-5 w-5 mr-2.5" />
+                    Adicionar a lista de compras
+                  </>
+                )}
+              </button>
 
               <button
                 onClick={() => setUpdate((prev) => !prev)}
@@ -242,19 +248,6 @@ export function UpdateProduct({ product, down }: Props) {
                 <Trash className="w-5 h-5 text-red-500" />
               </button>
             </div>
-
-            {product.usage_quantity === product.quantity ? (
-              <button
-                onClick={updateUsage}
-                className="flex items-center text-left justify-center bg-yellow-100/50 p-7 rounded-2xl my-10"
-              >
-                <Plus className="w-8 h-8 mr-5" />
-                <span className="-tracking-wide text-[12px] uppercase font-medium">
-                  Esse produto está em falta, clique aqui para adicionar a lista
-                  de compras
-                </span>
-              </button>
-            ) : null}
 
             <div className="flex flex-col space-y-5">
               <span className="font-medium capitalize text-xl -tracking-wider">

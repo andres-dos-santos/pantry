@@ -8,6 +8,7 @@ import { DatePicker } from './components/date-picker'
 
 import 'dayjs/locale/pt-br'
 import { UpdateProduct } from './components/update-product'
+import { ShoppingList } from './components/shopping-list'
 
 interface Product {
   id: number
@@ -93,7 +94,7 @@ export default function App() {
           TODOS OS PRODUTOS DA DESPENSA
         </span>
 
-        <ul className="w-full grid gap-2.5 grid-cols-2 sm:grid-cols-4 px-10 sm:px-5 pb-10">
+        <ul className="w-full grid gap-2.5 grid-cols-2 sm:grid-cols-4 px-10 sm:px-5 pb-40">
           {loading ? (
             <>
               <li className="border border-zinc-200 rounded-2xl p-4 animate-pulse bg-zinc-100 min-h-[100px] w-full relative"></li>
@@ -131,6 +132,8 @@ export default function App() {
             </>
           )}
         </ul>
+
+        <ShoppingList />
       </div>
     </>
   )
