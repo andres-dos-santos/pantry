@@ -13,8 +13,8 @@ import { toast } from '../utils/toast'
 const Schema = z.object({
   name: z.string(),
   quantity: z.number(),
-  quantity_suffix: z.string(),
-  tag: z.string(),
+  quantity_suffix: z.string().transform((val) => val.toUpperCase()),
+  tag: z.string().transform((val) => val.toLowerCase()),
   expirated_at: z.string().transform((val) => {
     const [day, month, year] = val.split('/')
 
@@ -38,7 +38,7 @@ export function CreateProduct() {
     try {
       setLoading(true)
 
-      await supabase.from('products').insert(input).select()
+      await supabase.from('products').insert(input)
 
       toast({ message: 'Criado com sucesso!', type: 'success' })
 
@@ -101,7 +101,7 @@ export function CreateProduct() {
             />
             <input
               type="text"
-              className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+              className="mb-2.5 uppercase rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
               placeholder="Sufixo"
               {...register('quantity_suffix')}
             />
@@ -109,7 +109,7 @@ export function CreateProduct() {
 
           <input
             type="text"
-            className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+            className="mb-2.5 lowercase rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
             placeholder="Tag"
             {...register('tag')}
           />
