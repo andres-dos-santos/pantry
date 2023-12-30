@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { ArrowRight } from 'lucide-react'
 
 import { supabase } from './lib/supabase'
 
@@ -6,9 +7,9 @@ import { CreateProduct } from './components/create-product'
 import { DatePicker } from './components/date-picker'
 
 import 'dayjs/locale/pt-br'
-import { ArrowRight } from 'lucide-react'
+import { UpdateProduct } from './components/update-product'
 
-interface Pantry {
+interface Product {
   id: number
   created_at: string
   name: string
@@ -22,15 +23,20 @@ interface Pantry {
 }
 
 export default function App() {
-  const [pantry, setPantry] = useState<Pantry[]>([])
+  const [pantry, setPantry] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
+  const [product, setProduct] = useState<Product | null>(null)
+
+  const handleDown = useCallback(() => {
+    setProduct(null)
+  }, [])
 
   useEffect(() => {
     setLoading(true)
     supabase
       .from('products')
       .select('*')
-      .then((response) => setPantry(response.data as Pantry[]))
+      .then((response) => setPantry(response.data as Product[]))
       .then(() => setLoading(false))
   }, [])
 
@@ -49,6 +55,9 @@ export default function App() {
           </label>
 
           <CreateProduct />
+          {product ? (
+            <UpdateProduct product={product} down={handleDown} />
+          ) : null}
         </div>
 
         <span className="flex my-10 px-10 sm:px-5 text-[13px] font-medium">
@@ -84,7 +93,7 @@ export default function App() {
           TODOS OS PRODUTOS DA DESPENSA
         </span>
 
-        <ul className="w-full grid gap-2.5 grid-cols-2 sm:grid-cols-4 px-10 sm:px-5">
+        <ul className="w-full grid gap-2.5 grid-cols-2 sm:grid-cols-4 px-10 sm:px-5 pb-10">
           {loading ? (
             <>
               <li className="border border-zinc-200 rounded-2xl p-4 animate-pulse bg-zinc-100 min-h-[100px] w-full relative"></li>
@@ -97,6 +106,7 @@ export default function App() {
                 <li
                   key={i.id}
                   className="cursor-pointer border border-zinc-200 rounded-2xl p-4 min-h-[100px] w-full relative"
+                  onClick={() => setProduct(i)}
                 >
                   <section className="flex items-center justify-between">
                     <div className="flex items-center space-x-1">
