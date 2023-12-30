@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Pencil, Trash } from 'lucide-react'
+import { Pencil, Plus, Trash } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -125,7 +125,7 @@ export function UpdateProduct({ product, down }: Props) {
     <>
       <aside
         data-show={show}
-        className="data-[show=true]:flex data-[show=false]:invisible transition-all duration-300 data-[show=false]:top-full sm:max-w-[400px] data-[show=true]:top-0 flex-col bg-white fixed right-0 bottom-0 h-screen z-10 w-full sm:border-l border-l-zinc-200"
+        className="data-[show=true]:flex data-[show=false]:invisible transition-all duration-300 data-[show=false]:top-full sm:max-w-[600px] data-[show=true]:top-0 flex-col bg-white fixed right-0 bottom-0 h-screen z-10 w-full sm:border-l border-l-zinc-200"
       >
         <header className="flex flex-col w-full p-10 sm:p-5 items-center justify-center mb-5">
           <button
@@ -142,7 +142,7 @@ export function UpdateProduct({ product, down }: Props) {
           <form
             action=""
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col px-10 sm:px-5"
+            className="flex flex-col px-10 sm:px-14"
           >
             <input
               type="text"
@@ -217,14 +217,16 @@ export function UpdateProduct({ product, down }: Props) {
             </footer>
           </form>
         ) : (
-          <div className="px-10 sm:px-5">
+          <div className="px-10 sm:px-14">
             <div className="flex items-center mb-10 space-x-2">
-              <button
-                onClick={updateUsage}
-                className="flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 rounded-full"
-              >
-                Usar {product.usage_quantity + 1} de {product.quantity}
-              </button>
+              {product.usage_quantity < product.quantity ? (
+                <button
+                  onClick={updateUsage}
+                  className="disabled:cursor-not-allowed flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 rounded-full"
+                >
+                  Usar {product.usage_quantity + 1} de {product.quantity}
+                </button>
+              ) : null}
 
               <button
                 onClick={() => setUpdate((prev) => !prev)}
@@ -240,6 +242,19 @@ export function UpdateProduct({ product, down }: Props) {
                 <Trash className="w-5 h-5 text-red-500" />
               </button>
             </div>
+
+            {product.usage_quantity === product.quantity ? (
+              <button
+                onClick={updateUsage}
+                className="flex items-center text-left justify-center bg-yellow-100/50 p-7 rounded-2xl my-10"
+              >
+                <Plus className="w-8 h-8 mr-5" />
+                <span className="-tracking-wide text-[12px] uppercase font-medium">
+                  Esse produto está em falta, clique aqui para adicionar a lista
+                  de compras
+                </span>
+              </button>
+            ) : null}
 
             <div className="flex flex-col space-y-5">
               <span className="font-medium capitalize text-xl -tracking-wider">
