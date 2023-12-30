@@ -11,4 +11,8 @@
     color: #3f3f46;
     background-color: #FFF;
   }
+
+  .success-toast {
+    @apply text-[12px] uppercase font-medium border border-zinc-200;
+  }
 }

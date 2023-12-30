@@ -1,22 +1,24 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus } from 'lucide-react'
+import { Check, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import MaskedInput from 'react-text-mask'
+import { Toaster, toast } from 'react-hot-toast'
+
 import { supabase } from '../lib/supabase'
 
 const Schema = z.object({
-  product_name: z.string(),
-  product_quantity: z.number(),
-  product_suffix: z.string(),
-  product_tag: z.string(),
-  /** product_price: z.string().transform((val) => {
+  name: z.string(),
+  quantity: z.number(),
+  quantity_suffix: z.string(),
+  tag: z.string(),
+  /** price: z.string().transform((val) => {
     return Number(val.replace(',', ''))
   }), */
-  expiration_date: z.string().transform((val) => {
+  expirated_at: z.string().transform((val) => {
     const [day, month, year] = val.split('/')
 
     const transformed = `20${year}-${month}-${day}T09:00:00+00:00`
@@ -41,13 +43,23 @@ export function CreateProduct() {
       setLoading(true)
 
       await supabase
-        .from('pantry')
-        .insert([{ ...input }])
+        .from('products')
+        .insert({ ...input })
         .select()
+
+      toast('Criado com sucesso!', {
+        icon: (
+          <div className="h-6 w-6 bg-green-500 rounded-full flex items-center justify-center">
+            <Check className="w-4 h-4 font-bold text-white" />
+          </div>
+        ),
+        className: 'success-toast',
+        position: 'bottom-center',
+      })
 
       reset()
     } catch (error) {
-      alert(JSON.stringify(error))
+      toast(JSON.stringify(error))
     } finally {
       setLoading(false)
     }
@@ -66,7 +78,9 @@ export function CreateProduct() {
         data-show={show}
         className="data-[show=true]:flex data-[show=false]:invisible transition-all duration-300 data-[show=false]:top-full sm:max-w-[400px] data-[show=true]:top-0 flex-col bg-white fixed right-0 bottom-0 h-screen z-10 w-full sm:border-l border-l-zinc-200"
       >
-        <header className="flex flex-col w-full p-10 sm:p-5 items-center justify-center">
+        <Toaster />
+
+        <header className="flex flex-col w-full p-10 sm:p-5 items-center justify-center mb-5">
           <button
             onClick={() => setShow((prev) => !prev)}
             className="flex items-center justify-center h-5 mb-10 w-full"
@@ -86,9 +100,9 @@ export function CreateProduct() {
         >
           <input
             type="text"
-            className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+            className="rounded-2xl capitalize bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
             placeholder="Nome com a marca"
-            {...register('product_name')}
+            {...register('name')}
           />
 
           <section className="flex items-center space-x-2.5">
@@ -96,13 +110,13 @@ export function CreateProduct() {
               type="text"
               className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
               placeholder="Quantidade"
-              {...register('product_quantity', { valueAsNumber: true })}
+              {...register('quantity', { valueAsNumber: true })}
             />
             <input
               type="text"
               className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
               placeholder="Sufixo"
-              {...register('product_suffix')}
+              {...register('quantity_suffix')}
             />
           </section>
 
@@ -110,7 +124,7 @@ export function CreateProduct() {
             type="text"
             className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
             placeholder="Tag"
-            {...register('product_tag')}
+            {...register('tag')}
           />
 
           {/** <divrounded-2xl  className="bg-zinc-100/50 h-12 w-full flex items-center px-2 -[12px] font-medium uppercase border border-zinc-200 focus-within:borde4-zinc-800" placeholder:uppercase>
@@ -118,13 +132,13 @@ export function CreateProduct() {
             <input
               className="h-6 w-full mb-0.5 ml-1 outline-none -tracking-wide"
               placeholder="Preço"
-              {...register('product_price')}
+              {...register('price')}
             />
           </div> */}
 
           <Controller
             control={control}
-            name="expiration_date"
+            name="expirated_at"
             render={({ field }) => (
               <MaskedInput
                 className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
