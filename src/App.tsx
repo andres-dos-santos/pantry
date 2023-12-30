@@ -111,12 +111,14 @@ export default function App() {
                 >
                   <section className="flex items-center justify-between">
                     <div className="flex items-center space-x-1">
-                      <span className="bg-zinc-800 px-2 py-1 rounded-full text-xs font-semibold text-white -tracking-wider">
-                        {i.usage_quantity} de {i.quantity}
+                      <span className="bg-zinc-800 px-3 py-1 lowercase rounded-full text-xs font-semibold text-white -tracking-wider">
+                        {i.usage_quantity > 0
+                          ? `usando ${i.usage_quantity} de ${i.quantity}`
+                          : `${i.quantity} ${i.quantity_suffix} fechado`}
                       </span>
-                      <span className="border border-zinc-200 px-2.5 py-1 rounded-full text-[11px] font-semibold -tracking-wider">
+                      {/** <span className="border border-zinc-200 px-2.5 py-1 rounded-full text-[11px] font-semibold -tracking-wider">
                         {i.quantity_suffix}
-                      </span>
+                      </span> */}
                     </div>
 
                     <ArrowRight className="group-hover:translate-x-2 transition-all duration-300 w-4 h-4" />
