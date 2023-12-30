@@ -58,7 +58,7 @@ export function UpdateProduct({ product, down }: Props) {
     try {
       setLoading(true)
 
-      await supabase.from('products').insert(input)
+      await supabase.from('products').update(input).eq('id', product.id)
 
       toast({ message: 'Criado com sucesso!', type: 'success' })
 
