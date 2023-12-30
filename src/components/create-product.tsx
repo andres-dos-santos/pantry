@@ -9,6 +9,7 @@ import MaskedInput from 'react-text-mask'
 
 import { supabase } from '../lib/supabase'
 import { toast } from '../utils/toast'
+import { Input } from './ui/input'
 
 const Schema = z.object({
   name: z.string(),
@@ -90,28 +91,22 @@ export function CreateProduct() {
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col px-10 sm:px-5"
         >
-          <label htmlFor="" className="mb-2.5">
-            <span className="text-xs ml-2 mb-1 font-medium">NOME E MARCA</span>
-            <input
-              type="text"
-              className="rounded-2xl capitalize bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-              placeholder="Nome com a marca"
-              {...register('name')}
-            />
-          </label>
+          <Input.Root>
+            <Input.Label>NOME E MARCA</Input.Label>
+            <Input.Write placeholder="Nome com a marca" {...register('name')} />
+          </Input.Root>
 
-          <label htmlFor="" className="mb-2.5">
-            <span className="text-xs ml-2 mb-1 font-medium">QUANTIDADE</span>
-            <input
-              type="text"
-              className="rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+          <Input.Root>
+            <Input.Label>QUANTIDADE</Input.Label>
+            <Input.Write
+              type="number"
               placeholder="Quantidade"
               {...register('quantity', { valueAsNumber: true })}
             />
-          </label>
+          </Input.Root>
 
-          <label htmlFor="" className="mb-2.5">
-            <span className="text-xs ml-2 mb-1 font-medium">SUFIXO</span>
+          <Input.Root>
+            <Input.Label>SUFIXO</Input.Label>
             <div className="flex flex-wrap items-center space-x-2">
               {['KG', 'GR', 'PC', 'UN', 'LT'].map((i) => (
                 <button
@@ -124,10 +119,10 @@ export function CreateProduct() {
                 </button>
               ))}
             </div>
-          </label>
+          </Input.Root>
 
-          <label htmlFor="" className="mb-2.5">
-            <span className="text-xs ml-2 mb-1 font-medium">TAG</span>
+          <Input.Root>
+            <Input.Label>TAG</Input.Label>
             <div className="flex flex-wrap items-center space-x-2">
               {['alimentação', 'limpeza', 'outros'].map((i) => (
                 <button
@@ -140,28 +135,10 @@ export function CreateProduct() {
                 </button>
               ))}
             </div>
-          </label>
+          </Input.Root>
 
-          {/** <input
-            type="text"
-            className="mb-2.5 lowercase rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-            placeholder="Tag"
-            {...register('tag')}
-          /> */}
-
-          {/** <divmb-2.5 rounded-2xl  className="bg-zinc-100/50 h-12 w-full flex items-center px-2 -[12px] font-medium uppercase border border-zinc-200 focus-within:borde4-zinc-800" placeholder:uppercase>
-            <span className="font-semibold">R$</span>
-            <input
-              className="h-6 w-full mb-0.5 ml-1 outline-none -tracking-wide"
-              placeholder="Preço"
-              {...register('price')}
-            />
-          </div> */}
-
-          <label htmlFor="" className="mb-2.5">
-            <span className="text-xs ml-2 mb-1 font-medium">
-              DATA DE VALIDADE
-            </span>
+          <Input.Root>
+            <Input.Label>DATA DE VALIDADE</Input.Label>
             <Controller
               control={control}
               name="expirated_at"
@@ -184,7 +161,7 @@ export function CreateProduct() {
                 />
               )}
             />
-          </label>
+          </Input.Root>
 
           <button className="mt-5 flex items-center justify-center border border-zinc-800 bg-zinc-800 h-12 mb-2.5 rounded-2xl w-full">
             <span className="text-[12px] font-semibold -tracking-wider text-white">

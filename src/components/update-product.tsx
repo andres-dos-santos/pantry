@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,6 +11,7 @@ import dayjs from 'dayjs'
 
 import { supabase } from '../lib/supabase'
 import { toast } from '../utils/toast'
+import { Input } from './ui/input'
 
 const Schema = z.object({
   name: z.string(),
@@ -45,14 +47,23 @@ interface Props {
   down(): void
 }
 
+const SUFFIX = {
+  PC: 'pacote',
+  KG: 'quilograma',
+  GR: 'grama',
+  UN: 'unidade',
+  LT: 'lata',
+} as any
+
 export function UpdateProduct({ product, down }: Props) {
   const [show, setShow] = useState(false)
   const [loading, setLoading] = useState(false)
   const [update, setUpdate] = useState(false)
 
-  const { handleSubmit, register, control, reset } = useForm<SchemaInput>({
-    resolver: zodResolver(Schema),
-  })
+  const { handleSubmit, register, control, reset, setValue, watch } =
+    useForm<SchemaInput>({
+      resolver: zodResolver(Schema),
+    })
 
   async function onSubmit(input: SchemaInput) {
     try {
@@ -142,79 +153,88 @@ export function UpdateProduct({ product, down }: Props) {
           <form
             action=""
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col px-10 sm:px-14"
+            className="flex flex-col px-10"
           >
-            <input
-              type="text"
-              className="mb-2.5 rounded-2xl capitalize bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-              placeholder="Nome com a marca"
-              {...register('name')}
-            />
+            <Input.Root>
+              <Input.Label>NOME E MARCA</Input.Label>
+              <Input.Write
+                placeholder="Nome com a marca"
+                {...register('name')}
+              />
+            </Input.Root>
 
-            <section className="flex items-center space-x-2.5">
-              <input
-                type="text"
-                className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+            <Input.Root>
+              <Input.Label>QUANTIDADE</Input.Label>
+              <Input.Write
+                type="number"
                 placeholder="Quantidade"
                 {...register('quantity', { valueAsNumber: true })}
               />
-              <input
-                type="text"
-                className="mb-2.5 uppercase rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-                placeholder="Sufixo"
-                {...register('quantity_suffix')}
+            </Input.Root>
+
+            <Input.Root>
+              <Input.Label>SUFIXO</Input.Label>
+              <div className="flex flex-wrap items-center space-x-2">
+                {['KG', 'GR', 'PC', 'UN', 'LT'].map((i) => (
+                  <button
+                    key={i}
+                    data-selected={watch('quantity_suffix') === i}
+                    onClick={() => setValue('quantity_suffix', i)}
+                    className="data-[selected=true]:bg-zinc-900 data-[selected=true]:text-white bg-zinc-100 rounded-xl h-10 w-10 text-xs font-medium flex items-center justify-center -tracking-wide"
+                  >
+                    {i}
+                  </button>
+                ))}
+              </div>
+            </Input.Root>
+
+            <Input.Root>
+              <Input.Label>TAG</Input.Label>
+              <div className="flex flex-wrap items-center space-x-2">
+                {['alimentação', 'limpeza', 'outros'].map((i) => (
+                  <button
+                    key={i}
+                    onClick={() => setValue('tag', i)}
+                    data-selected={watch('tag') === i}
+                    className="data-[selected=true]:bg-zinc-900 data-[selected=true]:text-white bg-zinc-100 rounded-xl h-10 px-4 uppercase text-xs font-medium flex items-center justify-center -tracking-wide"
+                  >
+                    {i}
+                  </button>
+                ))}
+              </div>
+            </Input.Root>
+
+            <Input.Root>
+              <Input.Label>DATA DE VALIDADE</Input.Label>
+              <Controller
+                control={control}
+                name="expirated_at"
+                render={({ field }) => (
+                  <MaskedInput
+                    className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+                    placeholder="Data de validade"
+                    onChange={field.onChange}
+                    value={field.value}
+                    mask={[
+                      /[0-9]/,
+                      /[0-9]/,
+                      '/',
+                      /[0-9]/,
+                      /[0-9]/,
+                      '/',
+                      /[0-9]/,
+                      /[0-9]/,
+                    ]}
+                  />
+                )}
               />
-            </section>
+            </Input.Root>
 
-            <input
-              type="text"
-              className="mb-2.5 lowercase rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-              placeholder="Tag"
-              {...register('tag')}
-            />
-
-            <Controller
-              control={control}
-              name="expirated_at"
-              render={({ field }) => (
-                <MaskedInput
-                  className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-                  placeholder="Data de validade"
-                  onChange={field.onChange}
-                  value={field.value}
-                  mask={[
-                    /[0-9]/,
-                    /[0-9]/,
-                    '/',
-                    /[0-9]/,
-                    /[0-9]/,
-                    '/',
-                    /[0-9]/,
-                    /[0-9]/,
-                  ]}
-                />
-              )}
-            />
-
-            <footer className="flex items-center space-x-2.5 mt-5">
-              <button
-                type="button"
-                onClick={() => setUpdate((prev) => !prev)}
-                className="flex items-center justify-center border border-zinc-800 h-12 mb-2.5 rounded-2xl w-full"
-              >
-                <span className="text-[12px] font-semibold -tracking-wider text-zinc-800">
-                  VOLTAR
-                </span>
-              </button>
-              <button
-                type="submit"
-                className="flex items-center justify-center border border-zinc-800 bg-zinc-800 h-12 mb-2.5 rounded-2xl w-full"
-              >
-                <span className="text-[12px] font-semibold -tracking-wider text-white">
-                  {loading ? 'CARREGANDO' : 'ATUALIZAR PRODUTO'}
-                </span>
-              </button>
-            </footer>
+            <button className="mt-5 flex items-center justify-center border border-zinc-800 bg-zinc-800 h-12 mb-2.5 rounded-2xl w-full">
+              <span className="text-[12px] font-semibold -tracking-wider text-white">
+                {loading ? 'CARREGANDO' : 'ATUALIZAR PRODUTO'}
+              </span>
+            </button>
           </form>
         ) : (
           <div className="px-10 sm:px-14">
@@ -222,14 +242,14 @@ export function UpdateProduct({ product, down }: Props) {
               <button
                 onClick={updateUsage}
                 data-add={product.usage_quantity <= product.quantity}
-                className="data-[add=true]:border-zinc-800 data-[add=true]:bg-zinc-900 data-[add=true]:text-white disabled:cursor-not-allowed flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 rounded-full"
+                className="sm:after:content-['a_lista_de_compras'] data-[add=true]:border-zinc-800 data-[add=true]:bg-zinc-900 data-[add=true]:text-white disabled:cursor-not-allowed flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 rounded-full"
               >
                 {product.usage_quantity < product.quantity ? (
                   `Usar ${product.usage_quantity + 1} de ${product.quantity}`
                 ) : (
                   <>
                     <Plus className="h-5 w-5 mr-2.5" />
-                    Adicionar a lista de compras
+                    <span className="mr-1">Adicionar</span>
                   </>
                 )}
               </button>
@@ -255,8 +275,8 @@ export function UpdateProduct({ product, down }: Props) {
               </span>
 
               <span className="font-medium text-xl -tracking-wider">
-                {product.quantity} {product.quantity_suffix} e usando{' '}
-                {product.usage_quantity} {product.quantity_suffix}
+                usando {product.usage_quantity}{' '}
+                {SUFFIX[product.quantity_suffix]} de {product.quantity}
               </span>
 
               <span className="font-medium capitalize text-xl -tracking-wider">
