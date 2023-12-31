@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, ShoppingCart } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -25,10 +25,20 @@ const Schema = z.object({
 
 type SchemaInput = z.infer<typeof Schema>
 
+interface Product {
+  id: number
+  created_at: string
+  name: string
+  quantity: number
+  quantity_suffix: string
+}
+
 export function ShoppingList() {
   const [show, setShow] = useState(false)
   const [add, setAdd] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  const [products, setProducts] = useState<Product[]>([])
 
   const { handleSubmit, register, reset } = useForm<SchemaInput>({
     resolver: zodResolver(Schema),
@@ -52,6 +62,16 @@ export function ShoppingList() {
 
   const handleDown = useCallback(() => {
     setShow(false)
+  }, [])
+
+  useEffect(() => {
+    setLoading(true)
+
+    supabase
+      .from('shopping-list')
+      .select('*')
+      .then((response) => setProducts(response.data as Product[]))
+      .then(() => setLoading(false))
   }, [])
 
   return (
@@ -134,23 +154,16 @@ export function ShoppingList() {
               Adicionar
             </button>
 
-            <li className="flex items-center justify-between mb-5">
-              <span className="font-medium capitalize text-xl -tracking-wider">
-                Arroz Palmares
-              </span>
-              <span className="font-medium capitalize text-xl -tracking-wider">
-                3 PC
-              </span>
-            </li>
-
-            <li className="flex items-center justify-between mb-5">
-              <span className="font-medium capitalize text-xl -tracking-wider">
-                Feijão Carioca
-              </span>
-              <span className="font-medium capitalize text-xl -tracking-wider">
-                4 PC
-              </span>
-            </li>
+            {products.map((i) => (
+              <li key={i.id} className="flex items-center justify-between mb-5">
+                <span className="font-medium capitalize text-xl -tracking-wider">
+                  {i.name}
+                </span>
+                <span className="font-medium capitalize text-xl -tracking-wider">
+                  {i.quantity} {i.quantity_suffix}
+                </span>
+              </li>
+            ))}
           </ul>
         )}
       </aside>

@@ -12,7 +12,7 @@ function Root(props: ComponentProps<'label'>) {
 
 function Label(props: ComponentProps<'span'>) {
   return (
-    <span className="text-xs ml-2 mb-1 font-medium" {...props}>
+    <span className="text-xs ml-1 mb-1 block font-medium" {...props}>
       {props.children}
     </span>
   )
@@ -23,7 +23,7 @@ const Write = forwardRef<HTMLInputElement, ComponentProps<'input'>>(
     return (
       <input
         ref={ref}
-        className="rounded-2xl capitalize bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
+        className="rounded-2xl capitalize bg-zinc-100/50 h-12 w-full text-[13px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
         {...props}
       />
     )

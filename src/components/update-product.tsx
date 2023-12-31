@@ -12,6 +12,7 @@ import dayjs from 'dayjs'
 import { supabase } from '../lib/supabase'
 import { toast } from '../utils/toast'
 import { Input } from './ui/input'
+import { AddToShoppingListForm } from './add-to-shopping-list-form'
 
 const Schema = z.object({
   name: z.string(),
@@ -59,6 +60,7 @@ export function UpdateProduct({ product, down }: Props) {
   const [show, setShow] = useState(false)
   const [loading, setLoading] = useState(false)
   const [update, setUpdate] = useState(false)
+  const [addShoppingList, setAddShoppingList] = useState(false)
 
   const { handleSubmit, register, control, reset, setValue, watch } =
     useForm<SchemaInput>({
@@ -146,7 +148,9 @@ export function UpdateProduct({ product, down }: Props) {
             <div className="h-[2px] rounded-full w-[25%] bg-zinc-800"></div>
           </button>
 
-          <span className="text-[13px] font-medium">DETALHES</span>
+          <span className="text-[13px] font-medium">
+            {addShoppingList ? 'ADICIONANDO A LISTA DE COMPRAS' : 'DETALHES'}
+          </span>
         </header>
 
         {update ? (
@@ -238,56 +242,73 @@ export function UpdateProduct({ product, down }: Props) {
           </form>
         ) : (
           <div className="px-10 sm:px-14">
-            <div className="flex items-center mb-10 space-x-2">
-              <button
-                onClick={updateUsage}
-                data-add={product.usage_quantity <= product.quantity}
-                className="sm:after:content-['a_lista_de_compras'] data-[add=true]:border-zinc-800 data-[add=true]:bg-zinc-900 data-[add=true]:text-white disabled:cursor-not-allowed flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 rounded-full"
-              >
-                {product.usage_quantity < product.quantity ? (
-                  `Usar ${product.usage_quantity + 1} de ${product.quantity}`
-                ) : (
-                  <>
-                    <Plus className="h-5 w-5 mr-2.5" />
-                    <span className="mr-1">Adicionar</span>
-                  </>
-                )}
-              </button>
+            {addShoppingList ? (
+              <AddToShoppingListForm
+                name={product.name}
+                quantity={product.quantity}
+                quantity_suffix={product.quantity_suffix}
+                back={() => setAddShoppingList(false)}
+              />
+            ) : (
+              <>
+                <div className="flex items-center mb-10 space-x-2">
+                  <button
+                    onClick={() =>
+                      product.usage_quantity <= product.quantity
+                        ? setAddShoppingList((prev) => !prev)
+                        : updateUsage()
+                    }
+                    data-add={product.usage_quantity <= product.quantity}
+                    className="sm:after:content-['a_lista_de_compras'] data-[add=true]:border-zinc-800 data-[add=true]:bg-zinc-900 data-[add=true]:text-white disabled:cursor-not-allowed flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 rounded-full"
+                  >
+                    {product.usage_quantity < product.quantity ? (
+                      `Usar ${product.usage_quantity + 1} de ${
+                        product.quantity
+                      }`
+                    ) : (
+                      <>
+                        <Plus className="h-5 w-5 mr-2.5" />
+                        <span className="mr-1">Adicionar</span>
+                      </>
+                    )}
+                  </button>
 
-              <button
-                onClick={() => setUpdate((prev) => !prev)}
-                className="flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 min-w-[3.5rem] w-14 rounded-full"
-              >
-                <Pencil className="w-5 h-5" />
-              </button>
+                  <button
+                    onClick={() => setUpdate((prev) => !prev)}
+                    className="flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 min-w-[3.5rem] w-14 rounded-full"
+                  >
+                    <Pencil className="w-5 h-5" />
+                  </button>
 
-              <button
-                onClick={handleRemove}
-                className="flex items-center justify-center bg-red-100/50 border border-red-500 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 min-w-[3.5rem] w-14 rounded-full"
-              >
-                <Trash className="w-5 h-5 text-red-500" />
-              </button>
-            </div>
+                  <button
+                    onClick={handleRemove}
+                    className="flex items-center justify-center bg-red-100/50 border border-red-500 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 min-w-[3.5rem] w-14 rounded-full"
+                  >
+                    <Trash className="w-5 h-5 text-red-500" />
+                  </button>
+                </div>
 
-            <div className="flex flex-col space-y-5">
-              <span className="font-medium capitalize text-xl -tracking-wider">
-                {product.name}
-              </span>
+                <div className="flex flex-col space-y-5">
+                  <span className="font-medium capitalize text-xl -tracking-wider">
+                    {product.name}
+                  </span>
 
-              <span className="font-medium text-xl -tracking-wider">
-                usando {product.usage_quantity}{' '}
-                {SUFFIX[product.quantity_suffix]} de {product.quantity}
-              </span>
+                  <span className="font-medium text-xl -tracking-wider">
+                    usando {product.usage_quantity}{' '}
+                    {SUFFIX[product.quantity_suffix]} de {product.quantity}
+                  </span>
 
-              <span className="font-medium capitalize text-xl -tracking-wider">
-                {product.tag}
-              </span>
+                  <span className="font-medium capitalize text-xl -tracking-wider">
+                    {product.tag}
+                  </span>
 
-              <span className="font-medium text-xl -tracking-wider">
-                vence em {dayjs(product.expirated_at).diff(new Date(), 'days')}{' '}
-                dias
-              </span>
-            </div>
+                  <span className="font-medium text-xl -tracking-wider">
+                    vence em{' '}
+                    {dayjs(product.expirated_at).diff(new Date(), 'days')} dias
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         )}
       </aside>
