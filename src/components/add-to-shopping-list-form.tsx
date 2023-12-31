@@ -19,9 +19,9 @@ const Schema = z.object({
 type SchemaInput = z.infer<typeof Schema>
 
 interface Props {
-  name: string
-  quantity: number
-  quantity_suffix: string
+  name?: string
+  quantity?: number
+  quantity_suffix?: string
 
   back(): void
 }

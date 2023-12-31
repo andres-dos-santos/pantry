@@ -1,29 +1,9 @@
-'use client'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, ShoppingCart } from 'lucide-react'
+import { Check, Loader2, Plus, ShoppingCart } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 
 import { supabase } from '../lib/supabase'
-import { toast } from '../utils/toast'
 
-const Schema = z.object({
-  name: z.string(),
-  quantity: z.number(),
-  quantity_suffix: z.string().transform((val) => val.toUpperCase()),
-  tag: z.string().transform((val) => val.toLowerCase()),
-  expirated_at: z.string().transform((val) => {
-    const [day, month, year] = val.split('/')
-
-    const transformed = `20${year}-${month}-${day}T09:00:00+00:00`
-
-    return transformed
-  }),
-})
-
-type SchemaInput = z.infer<typeof Schema>
+import { AddToShoppingListForm } from './add-to-shopping-list-form'
 
 interface Product {
   id: number
@@ -40,29 +20,20 @@ export function ShoppingList() {
 
   const [products, setProducts] = useState<Product[]>([])
 
-  const { handleSubmit, register, reset } = useForm<SchemaInput>({
-    resolver: zodResolver(Schema),
-  })
-
-  async function onSubmit(input: SchemaInput) {
-    try {
-      setLoading(true)
-
-      await supabase.from('products').insert(input)
-
-      toast({ message: 'Criado com sucesso!', type: 'success' })
-
-      reset()
-    } catch (error) {
-      toast({ message: JSON.stringify(error), type: 'error' })
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleDown = useCallback(() => {
     setShow(false)
   }, [])
+
+  function handleConfirmPurchase() {
+    supabase
+      .from('shopping-list')
+      .delete()
+      .in(
+        'id',
+        products.map((i) => i.id),
+      )
+      .then(() => setShow(false))
+  }
 
   useEffect(() => {
     setLoading(true)
@@ -100,59 +71,31 @@ export function ShoppingList() {
         </header>
 
         {add ? (
-          <form
-            action=""
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col px-10 sm:px-5"
-          >
-            <input
-              type="text"
-              className="mb-2.5 rounded-2xl capitalize bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-              placeholder="Nome com a marca"
-              {...register('name')}
-            />
-
-            <section className="flex items-center space-x-2.5">
-              <input
-                type="text"
-                className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-                placeholder="Quantidade"
-                {...register('quantity', { valueAsNumber: true })}
-              />
-              <input
-                type="text"
-                className="mb-2.5 uppercase rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-                placeholder="Sufixo"
-                {...register('quantity_suffix')}
-              />
-            </section>
-
-            <footer className="flex items-center space-x-2.5 mt-5">
-              <button
-                onClick={() => setAdd(false)}
-                className="flex items-center justify-center border border-zinc-200 h-12 mb-2.5 rounded-2xl w-full"
-              >
-                <span className="text-[12px] font-semibold -tracking-wider text-zinc-800">
-                  VOLTAR
-                </span>
-              </button>
-
-              <button className="flex items-center justify-center border border-zinc-800 bg-zinc-800 h-12 mb-2.5 rounded-2xl w-full">
-                <span className="text-[12px] font-semibold -tracking-wider text-white">
-                  {loading ? 'CARREGANDO' : 'ADICIONAR PRODUTO'}
-                </span>
-              </button>
-            </footer>
-          </form>
+          <div className="px-10 sm:px-5">
+            <AddToShoppingListForm back={() => setAdd(false)} />
+          </div>
         ) : (
           <ul className="px-10 sm:px-5">
-            <button
-              onClick={() => setAdd((prev) => !prev)}
-              className="rounded-tl-3xl rounded-br-3xl rounded-bl-[7px] rounded-tr-[7px] fixed bg-zinc-800 bottom-5 right-5 flex items-center justify-center border border-zinc-800 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 text-white"
-            >
-              <Plus className="w-4 h-4 mr-2.5" />
-              Adicionar
-            </button>
+            <div className="fixed bottom-5 left-5 right-5 flex items-center justify-center space-x-2.5">
+              <button
+                onClick={handleConfirmPurchase}
+                className="truncate rounded-full flex w-full items-center justify-center border border-zinc-200 -tracking-wide text-[12px] font-medium min-h-[3.5rem] h-14 px-7 text-zinc-800"
+              >
+                {loading ? (
+                  <Loader2 className="animate-spin duration-300 w-4 h-4 mr-2.5 text-zinc-800" />
+                ) : (
+                  <Check className="w-4 h-4 mr-2.5 text-green-500" />
+                )}
+                A COMPRA JÁ FOI FEITA?
+              </button>
+              <button
+                onClick={() => setAdd((prev) => !prev)}
+                className="rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-800 -tracking-wide text-[12px] font-medium min-h-[3.5rem] h-14 px-7 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2.5" />
+                ADICIONAR
+              </button>
+            </div>
 
             {products.map((i) => (
               <li key={i.id} className="flex items-center justify-between mb-5">

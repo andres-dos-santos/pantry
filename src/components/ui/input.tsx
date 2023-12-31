@@ -4,7 +4,7 @@ import { ComponentProps, forwardRef } from 'react'
 
 function Root(props: ComponentProps<'label'>) {
   return (
-    <label htmlFor="" className="mb-2.5" {...props}>
+    <label htmlFor="" className="mb-3" {...props}>
       {props.children}
     </label>
   )
