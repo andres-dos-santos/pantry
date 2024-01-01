@@ -1,138 +1,67 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Pencil, Plus, Trash } from 'lucide-react'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { z } from 'zod'
-import MaskedInput from 'react-text-mask'
-import dayjs from 'dayjs'
+import * as Slider from '@radix-ui/react-slider'
 
 import { supabase } from '../lib/supabase'
+
 import { toast } from '../utils/toast'
-import { Input } from './ui/input'
+
+import { ProductForm } from './product-form'
+
+import type { Product } from '../types'
 import { AddToShoppingListForm } from './add-to-shopping-list-form'
-
-const Schema = z.object({
-  name: z.string(),
-  quantity: z.number(),
-  quantity_suffix: z.string().transform((val) => val.toUpperCase()),
-  tag: z.string().transform((val) => val.toLowerCase()),
-  expirated_at: z.string().transform((val) => {
-    const [day, month, year] = val.split('/')
-
-    const transformed = `20${year}-${month}-${day}T09:00:00+00:00`
-
-    return transformed
-  }),
-})
-
-type SchemaInput = z.infer<typeof Schema>
-
-interface Product {
-  id: number
-  created_at: string
-  name: string
-  quantity: number
-  usage_quantity: number
-  quantity_suffix: string
-  tag: string
-  price: number
-  updated_at: string
-  expirated_at: string
-}
 
 interface Props {
   product: Product
   down(): void
 }
 
-const SUFFIX = {
-  PC: 'pacote',
-  KG: 'quilograma',
-  GR: 'grama',
-  UN: 'unidade',
-  LT: 'lata',
-} as any
-
 export function UpdateProduct({ product, down }: Props) {
   const [show, setShow] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [update, setUpdate] = useState(false)
-  const [addShoppingList, setAddShoppingList] = useState(false)
-
-  const { handleSubmit, register, control, reset, setValue, watch } =
-    useForm<SchemaInput>({
-      resolver: zodResolver(Schema),
-    })
-
-  async function onSubmit(input: SchemaInput) {
-    try {
-      setLoading(true)
-
-      await supabase.from('products').update(input).eq('id', product.id)
-
-      toast({ message: 'Criado com sucesso!', type: 'success' })
-
-      reset()
-    } catch (error) {
-      toast({ message: JSON.stringify(error), type: 'error' })
-    } finally {
-      setLoading(false)
-    }
-  }
+  const [add, setAdd] = useState(false)
 
   const handleDown = useCallback(() => {
     setShow(false)
 
     down()
-
-    setUpdate(false)
   }, [down])
 
-  async function updateUsage() {
+  function handleUpdateUsage(usage: number) {
     try {
-      await supabase
+      supabase
         .from('products')
-        .update({ usage_quantity: product.usage_quantity + 1 })
+        .update({ usage_quantity: usage })
         .eq('id', product.id)
-
-      toast({ message: 'Atualizado com sucesso!', type: 'success' })
-
-      handleDown()
+        .then(() => {
+          toast({ message: 'Atualizado com sucesso!', type: 'success' })
+        })
     } catch (error) {
       toast({ message: 'Ocorreu um erro!', type: 'error' })
     }
   }
 
-  async function handleRemove() {
+  function handleRemove() {
     try {
-      await supabase
+      supabase
         .from('products')
         .delete()
-        .eq('id', product?.id)
-
-      toast({ message: 'Removido com sucesso!', type: 'success' })
-
-      handleDown()
+        .eq('id', product!.id)
+        .then(() => {
+          toast({ message: 'Removido com sucesso!', type: 'success' })
+        })
     } catch (error) {
       toast({ message: 'Ocorreu um erro', type: 'error' })
+    } finally {
+      handleDown()
     }
   }
 
-  useEffect(() => {
-    if (product) {
-      setShow(true)
+  const back = useCallback(() => setAdd(false), [])
 
-      reset({
-        ...product,
-        expirated_at: dayjs(product.expirated_at).format('DD/MM/YY'),
-      })
-    } else {
-      setUpdate(true)
-    }
-  }, [product, reset])
+  useEffect(() => product && setShow(true), [product])
 
   return (
     <>
@@ -140,177 +69,65 @@ export function UpdateProduct({ product, down }: Props) {
         data-show={show}
         className="data-[show=true]:flex data-[show=false]:invisible transition-all duration-300 data-[show=false]:top-full sm:max-w-[600px] data-[show=true]:top-0 flex-col bg-white fixed right-0 bottom-0 h-screen z-10 w-full sm:border-l border-l-zinc-200"
       >
-        <header className="flex flex-col w-full p-10 sm:p-5 items-center justify-center mb-5">
+        <header className="flex items-center justify-between px-10 sm:px-5 my-10">
           <button
-            onClick={handleDown}
-            className="flex items-center justify-center h-5 mb-10 w-full"
+            onClick={() =>
+              add ? setAdd((prev) => !prev) : setShow((prev) => !prev)
+            }
+            className="flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[2.5rem] h-10 min-w-[2.5rem] w-10 rounded-full"
           >
-            <div className="h-[2px] rounded-full w-[25%] bg-zinc-800"></div>
+            <ArrowLeft className="w-4 h-4" />
           </button>
 
-          <span className="text-[13px] font-medium">
-            {addShoppingList ? 'ADICIONANDO A LISTA DE COMPRAS' : 'DETALHES'}
+          <span className="text-[13px] font-medium uppercase truncate max-w-[50%]">
+            DETALHES DE {product.name}
           </span>
         </header>
 
-        {update ? (
-          <form
-            action=""
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col px-10"
-          >
-            <Input.Root>
-              <Input.Label>NOME E MARCA</Input.Label>
-              <Input.Write
-                placeholder="Nome com a marca"
-                {...register('name')}
-              />
-            </Input.Root>
-
-            <Input.Root>
-              <Input.Label>QUANTIDADE</Input.Label>
-              <Input.Write
-                type="number"
-                placeholder="Quantidade"
-                {...register('quantity', { valueAsNumber: true })}
-              />
-            </Input.Root>
-
-            <Input.Root>
-              <Input.Label>SUFIXO</Input.Label>
-              <div className="flex flex-wrap items-center space-x-2">
-                {['KG', 'GR', 'PC', 'UN', 'LT'].map((i) => (
-                  <button
-                    key={i}
-                    data-selected={watch('quantity_suffix') === i}
-                    onClick={() => setValue('quantity_suffix', i)}
-                    className="data-[selected=true]:bg-zinc-900 data-[selected=true]:text-white bg-zinc-100 rounded-xl h-10 w-10 text-xs font-medium flex items-center justify-center -tracking-wide"
-                  >
-                    {i}
-                  </button>
-                ))}
-              </div>
-            </Input.Root>
-
-            <Input.Root>
-              <Input.Label>TAG</Input.Label>
-              <div className="flex flex-wrap items-center space-x-2">
-                {['alimentação', 'limpeza', 'outros'].map((i) => (
-                  <button
-                    key={i}
-                    onClick={() => setValue('tag', i)}
-                    data-selected={watch('tag') === i}
-                    className="data-[selected=true]:bg-zinc-900 data-[selected=true]:text-white bg-zinc-100 rounded-xl h-10 px-4 uppercase text-xs font-medium flex items-center justify-center -tracking-wide"
-                  >
-                    {i}
-                  </button>
-                ))}
-              </div>
-            </Input.Root>
-
-            <Input.Root>
-              <Input.Label>DATA DE VALIDADE</Input.Label>
-              <Controller
-                control={control}
-                name="expirated_at"
-                render={({ field }) => (
-                  <MaskedInput
-                    className="mb-2.5 rounded-2xl bg-zinc-100/50 h-12 w-full text-[12px] font-medium border border-zinc-200 outline-none focus:border-zinc-800 px-4 -tracking-wide placeholder:uppercase"
-                    placeholder="Data de validade"
-                    onChange={field.onChange}
-                    value={field.value}
-                    mask={[
-                      /[0-9]/,
-                      /[0-9]/,
-                      '/',
-                      /[0-9]/,
-                      /[0-9]/,
-                      '/',
-                      /[0-9]/,
-                      /[0-9]/,
-                    ]}
-                  />
-                )}
-              />
-            </Input.Root>
-
-            <button className="mt-5 flex items-center justify-center border border-zinc-800 bg-zinc-800 h-12 mb-2.5 rounded-2xl w-full">
-              <span className="text-[12px] font-semibold -tracking-wider text-white">
-                {loading ? 'CARREGANDO' : 'ATUALIZAR PRODUTO'}
+        <div className="px-10 sm:px-5 mb-5">
+          {add ? (
+            <AddToShoppingListForm back={back} product={product} />
+          ) : (
+            <>
+              <span className="text-xs mb-1 block -tracking-wide font-medium">
+                CONTROLE DE USO{' '}
               </span>
-            </button>
-          </form>
-        ) : (
-          <div className="px-10 sm:px-14">
-            {addShoppingList ? (
-              <AddToShoppingListForm
-                name={product.name}
-                quantity={product.quantity}
-                quantity_suffix={product.quantity_suffix}
-                back={() => setAddShoppingList(false)}
-              />
-            ) : (
-              <>
-                <div className="flex items-center mb-10 space-x-2">
-                  <button
-                    onClick={() =>
-                      product.usage_quantity <= product.quantity
-                        ? setAddShoppingList((prev) => !prev)
-                        : updateUsage()
-                    }
-                    data-add={product.usage_quantity <= product.quantity}
-                    className="sm:after:content-['a_lista_de_compras'] data-[add=true]:border-zinc-800 data-[add=true]:bg-zinc-900 data-[add=true]:text-white disabled:cursor-not-allowed flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 rounded-full"
-                  >
-                    {product.usage_quantity < product.quantity ? (
-                      `Usar ${product.usage_quantity + 1} de ${
-                        product.quantity
-                      }`
-                    ) : (
-                      <>
-                        <Plus className="h-5 w-5 mr-2.5" />
-                        <span className="mr-1">Adicionar</span>
-                      </>
-                    )}
-                  </button>
 
-                  <button
-                    onClick={() => setUpdate((prev) => !prev)}
-                    className="flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 min-w-[3.5rem] w-14 rounded-full"
-                  >
-                    <Pencil className="w-5 h-5" />
-                  </button>
+              <Slider.Root
+                className="relative flex items-center select-none touch-none w-full h-5"
+                defaultValue={[product.usage_quantity]}
+                max={product.quantity}
+                onValueCommit={(rate) => handleUpdateUsage(rate[0])}
+                step={1}
+              >
+                <Slider.Track className="bg-zinc-200 relative grow rounded-full h-[4px]">
+                  <Slider.Range className="absolute bg-zinc-200 rounded-full h-full" />
+                </Slider.Track>
+                <Slider.Thumb className="block w-5 h-5 bg-white border border-zinc-200 rounded-[10px] focus:outline-none" />
+              </Slider.Root>
 
-                  <button
-                    onClick={handleRemove}
-                    className="flex items-center justify-center bg-red-100/50 border border-red-500 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 min-w-[3.5rem] w-14 rounded-full"
-                  >
-                    <Trash className="w-5 h-5 text-red-500" />
-                  </button>
-                </div>
+              <div
+                data-buy={product.usage_quantity === product.quantity}
+                className="data-[buy=false]:hidden border-b border-zinc-200 pb-2.5 mb-5"
+              >
+                <button
+                  onClick={() => setAdd((prev) => !prev)}
+                  className="my-2.5 flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[2.5rem] h-10 px-5 rounded-[5px]"
+                >
+                  ADICIONAR A LISTA DO PRÓXIMO MÊS
+                  <ArrowRight className="w-4 h-4 ml-2.5" />
+                </button>
 
-                <div className="flex flex-col space-y-5">
-                  <span className="font-medium capitalize text-xl -tracking-wider">
-                    {product.name}
-                  </span>
+                <strong className="text-xs font-medium">
+                  Você está usando {product.usage_quantity} de{' '}
+                  {product.quantity} {product.quantity_suffix}
+                </strong>
+              </div>
 
-                  <span className="font-medium text-xl -tracking-wider">
-                    usando {product.usage_quantity}{' '}
-                    {SUFFIX[product.quantity_suffix]} de {product.quantity}
-                  </span>
-
-                  <span className="font-medium capitalize text-xl -tracking-wider">
-                    {product.tag}
-                  </span>
-
-                  <span className="font-medium text-xl -tracking-wider">
-                    vence em{' '}
-                    {dayjs(product.expirated_at).diff(new Date(), 'days')} dias
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+              <ProductForm onRemove={handleRemove} product={product} />
+            </>
+          )}
+        </div>
       </aside>
     </>
   )

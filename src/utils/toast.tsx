@@ -19,7 +19,7 @@ export function toast({ message, type }: Props) {
         </div>
       ),
     className: 'toast',
-    position: 'bottom-center',
+    position: 'top-center',
   })
 }
 

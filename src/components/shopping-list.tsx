@@ -1,4 +1,4 @@
-import { Check, Loader2, Plus, ShoppingCart } from 'lucide-react'
+import { Check, Loader2, Plus } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 
 import { supabase } from '../lib/supabase'
@@ -47,14 +47,6 @@ export function ShoppingList() {
 
   return (
     <>
-      <button
-        onClick={() => setShow((prev) => !prev)}
-        className="rounded-tl-3xl rounded-br-3xl rounded-bl-[7px] rounded-tr-[7px] fixed bg-zinc-800 bottom-5 right-5 flex items-center justify-center border border-zinc-800 -tracking-wide text-[12px] uppercase font-medium min-h-[3.5rem] h-14 px-7 text-white"
-      >
-        <ShoppingCart className="w-4 h-4 mr-2.5" />
-        Lista de compras
-      </button>
-
       <aside
         data-show={show}
         className="data-[show=true]:flex data-[show=false]:invisible transition-all duration-300 data-[show=false]:top-full sm:max-w-[400px] data-[show=true]:top-0 flex-col bg-white fixed right-0 bottom-0 h-screen z-10 w-full sm:border-l border-l-zinc-200"
@@ -90,7 +82,7 @@ export function ShoppingList() {
               </button>
               <button
                 onClick={() => setAdd((prev) => !prev)}
-                className="rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-800 -tracking-wide text-[12px] font-medium min-h-[3.5rem] h-14 px-7 text-white"
+                className="rounded-full bg-zinc-200/50 backdrop-blur-lg flex items-center justify-center border border-zinc-800 -tracking-wide text-[12px] font-medium min-h-[3.5rem] h-14 px-7 text-white"
               >
                 <Plus className="w-4 h-4 mr-2.5" />
                 ADICIONAR
