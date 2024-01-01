@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import { Home } from '../screens/home'
 import { Layout } from '../screens/layout'
+import { ShoppingList } from '../screens/shopping-list'
 
 const router = createBrowserRouter([
   {
@@ -12,6 +13,11 @@ const router = createBrowserRouter([
       {
         path: '/pantry',
         element: <Home />,
+        // loader: teamLoader,
+      },
+      {
+        path: '/shopping-list',
+        element: <ShoppingList />,
         // loader: teamLoader,
       },
     ],

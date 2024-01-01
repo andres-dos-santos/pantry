@@ -89,39 +89,41 @@ export function UpdateProduct({ product, down }: Props) {
             <AddToShoppingListForm back={back} product={product} />
           ) : (
             <>
-              <span className="text-xs mb-1 block -tracking-wide font-medium">
-                CONTROLE DE USO{' '}
-              </span>
+              <div className="p-5 border border-zinc-200 rounded-[5px] mb-5">
+                <span className="text-xs mb-1.5 block -tracking-wide font-medium">
+                  CONTROLE DE USO{' '}
+                </span>
 
-              <Slider.Root
-                className="relative flex items-center select-none touch-none w-full h-5"
-                defaultValue={[product.usage_quantity]}
-                max={product.quantity}
-                onValueCommit={(rate) => handleUpdateUsage(rate[0])}
-                step={1}
-              >
-                <Slider.Track className="bg-zinc-200 relative grow rounded-full h-[4px]">
-                  <Slider.Range className="absolute bg-zinc-200 rounded-full h-full" />
-                </Slider.Track>
-                <Slider.Thumb className="block w-5 h-5 bg-white border border-zinc-200 rounded-[10px] focus:outline-none" />
-              </Slider.Root>
-
-              <div
-                data-buy={product.usage_quantity === product.quantity}
-                className="data-[buy=false]:hidden border-b border-zinc-200 pb-2.5 mb-5"
-              >
-                <button
-                  onClick={() => setAdd((prev) => !prev)}
-                  className="my-2.5 flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[2.5rem] h-10 px-5 rounded-[5px]"
+                <Slider.Root
+                  className="relative flex items-center select-none touch-none w-full h-5"
+                  defaultValue={[product.usage_quantity]}
+                  max={product.quantity}
+                  onValueCommit={(rate) => handleUpdateUsage(rate[0])}
+                  step={1}
                 >
-                  ADICIONAR A LISTA DO PRÓXIMO MÊS
-                  <ArrowRight className="w-4 h-4 ml-2.5" />
-                </button>
+                  <Slider.Track className="bg-zinc-200 relative grow rounded-full h-[4px]">
+                    <Slider.Range className="absolute bg-zinc-200 rounded-full h-full" />
+                  </Slider.Track>
+                  <Slider.Thumb className="block w-5 h-5 bg-zinc-900 border border-zinc-900 rounded-[10px] focus:outline-none" />
+                </Slider.Root>
 
-                <strong className="text-xs font-medium">
-                  Você está usando {product.usage_quantity} de{' '}
-                  {product.quantity} {product.quantity_suffix}
-                </strong>
+                <div
+                  data-buy={product.usage_quantity === product.quantity}
+                  className="data-[buy=false]:hidden"
+                >
+                  <button
+                    onClick={() => setAdd((prev) => !prev)}
+                    className="my-2.5 flex items-center justify-center border border-zinc-200 -tracking-wide text-[12px] uppercase font-medium min-h-[2.5rem] h-10 px-5 rounded-[5px]"
+                  >
+                    ADICIONAR A LISTA DO PRÓXIMO MÊS
+                    <ArrowRight className="w-4 h-4 ml-2.5" />
+                  </button>
+
+                  <strong className="text-xs font-medium">
+                    Você está usando {product.usage_quantity} de{' '}
+                    {product.quantity} {product.quantity_suffix}
+                  </strong>
+                </div>
               </div>
 
               <ProductForm onRemove={handleRemove} product={product} />

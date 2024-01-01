@@ -63,12 +63,19 @@ export function Home() {
           </div>
         </section>
 
-        <section className="flex items-center justify-between w-full my-10 px-10 sm:px-5">
-          <span className="text-[13px] font-medium">
-            TODOS OS PRODUTOS DA DESPENSA
-          </span>
+        <section className="flex items-center justify-between w-full mt-10 mb-5 px-10 sm:px-5">
+          <span className="text-[13px] font-medium">DESPENSA</span>
 
-          <CreateProduct />
+          <div className="flex items-center space-x-2">
+            <label>
+              <input
+                type="text"
+                className="h-10 rounded-full border border-zinc-200 w-full text-[13px] font-medium focus:ring-2 focus:ring-blue-200 outline-none focus:border-blue-500 px-3 -tracking-wide"
+                placeholder="Pesquisar por nome"
+              />
+            </label>
+            <CreateProduct />
+          </div>
         </section>
 
         <ul className="w-full grid gap-2.5 grid-cols-2 sm:grid-cols-4 px-10 sm:px-5 pb-40">

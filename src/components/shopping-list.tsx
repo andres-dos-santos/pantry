@@ -58,8 +58,6 @@ export function ShoppingList() {
           >
             <div className="h-[2px] rounded-full w-[25%] bg-zinc-800"></div>
           </button>
-
-          <span className="text-[13px] font-medium">LISTA DE COMPRAS</span>
         </header>
 
         {add ? (
@@ -88,17 +86,6 @@ export function ShoppingList() {
                 ADICIONAR
               </button>
             </div>
-
-            {products.map((i) => (
-              <li key={i.id} className="flex items-center justify-between mb-5">
-                <span className="font-medium capitalize text-xl -tracking-wider">
-                  {i.name}
-                </span>
-                <span className="font-medium capitalize text-xl -tracking-wider">
-                  {i.quantity} {i.quantity_suffix}
-                </span>
-              </li>
-            ))}
           </ul>
         )}
       </aside>

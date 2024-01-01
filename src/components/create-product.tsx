@@ -32,7 +32,9 @@ export function CreateProduct() {
           </span>
         </header>
 
-        <ProductForm />
+        <div className="sm:px-5 px-10">
+          <ProductForm />
+        </div>
       </aside>
     </>
   )
