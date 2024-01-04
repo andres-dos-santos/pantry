@@ -1,16 +1,15 @@
 import { Outlet } from 'react-router-dom'
 
-import { Menu } from '../components/menu'
 import { Logo } from '../components/logo'
 
 export function Layout() {
   return (
     <>
-      <header className="flex items-center justify-between px-10 h-20">
+      <header className="flex items-center justify-between sm:border-b border-zinc-200 px-10 h-20 sm:ml-96 sm:w-[calc(100%_-_24rem)]">
         <div className="flex items-center gap-x-5">
-          <Menu />
-
-          <Logo />
+          <div className="sm:hidden">
+            <Logo />
+          </div>
         </div>
 
         <div className="flex items-center space-x-2.5">
@@ -19,7 +18,9 @@ export function Layout() {
         </div>
       </header>
 
-      <Outlet />
+      <div className="sm:ml-96 sm:w-[calc(100%_-_24rem)]">
+        <Outlet />
+      </div>
     </>
   )
 }

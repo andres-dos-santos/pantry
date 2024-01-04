@@ -17,7 +17,7 @@ function Label(
 ) {
   return (
     <span
-      className="text-xs mb-1.5 block -tracking-wide font-medium"
+      className="text-xs mb-1 sm:mb-1.5 block -tracking-wide font-medium"
       {...props}
     >
       {props.children}{' '}

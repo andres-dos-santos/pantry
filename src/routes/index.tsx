@@ -1,24 +1,22 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
-import { Home } from '../screens/home'
 import { Layout } from '../screens/layout'
-import { ShoppingList } from '../screens/shopping-list'
+
+import { Home } from '../screens/home'
+import { CreateAndUpdate } from '../screens/create-and-update'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
-    // loader: rootLoader,
     children: [
       {
-        path: '/pantry',
+        path: '/',
         element: <Home />,
-        // loader: teamLoader,
       },
       {
-        path: '/shopping-list',
-        element: <ShoppingList />,
-        // loader: teamLoader,
+        path: '/:id',
+        element: <CreateAndUpdate />,
       },
     ],
   },
