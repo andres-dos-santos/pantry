@@ -241,15 +241,15 @@ export function CreateAndUpdate() {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col pb-10 sm:px-5 px-10"
+          className="grid grid-cols-1 sm:grid-cols-3 pb-10 sm:px-5 px-10 sm:gap-x-5"
         >
           <Input.Root>
             <Input.Label required>Nome</Input.Label>
             <Input.Write placeholder="Banana" {...register('name')} />
           </Input.Root>
 
-          <div className="flex items-baseline space-x-5 w-full">
-            <Input.Root className="max-w-[25%] w-[25%] min-w-[25%]">
+          <div className="flex items-baseline space-x-5 w-full sm:col-span-2">
+            <Input.Root className="max-w-[25%] w-[25%] min-w-[25%] sm:min-w-[48%] sm:w-[48%]">
               <Input.Label required>Quantidade</Input.Label>
               <Input.Write
                 type="number"
@@ -335,14 +335,18 @@ export function CreateAndUpdate() {
             </div>
           </Input.Root>
 
-          <Checkbox.Root onCheckedChange={(value) => setValue('fixed', value)}>
-            <Checkbox.Label>
-              Manter esse produto para outras compras
-            </Checkbox.Label>
-          </Checkbox.Root>
+          <div className="sm:col-span-3">
+            <Checkbox.Root
+              onCheckedChange={(value) => setValue('fixed', value)}
+            >
+              <Checkbox.Label>
+                Manter esse produto para outras compras
+              </Checkbox.Label>
+            </Checkbox.Root>
+          </div>
 
-          <footer className="flex items-center justify-center space-x-2.5 mt-5">
-            <button className="flex items-center justify-center w-full border border-zinc-800 bg-zinc-800 h-10 rounded-[5px]">
+          <footer className="flex items-center justify-end space-x-2.5 mt-5 sm:mt-10 sm:col-span-3">
+            <button className="flex items-center justify-center w-full sm:w-[30%] border border-zinc-800 bg-zinc-800 h-10 rounded-[5px]">
               <span className="text-[12px] font-semibold -tracking-wider text-white">
                 {!isIdle ? 'CARREGANDO' : 'ADICIONAR A LISTA DE COMPRAS'}
               </span>
