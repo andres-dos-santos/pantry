@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import * as Slider from '@radix-ui/react-slider'
+import { useState } from 'react'
 
 import { supabase } from '../lib/supabase'
 
@@ -18,8 +19,9 @@ import { useMutate } from '../hooks/use-mutation'
 
 import { Input } from '../components/ui/input'
 import { Checkbox } from '../components/ui/checkbox'
-import { Product } from '../types'
-import { useState } from 'react'
+import { RemoveProduct } from '../components/remove-product'
+
+import type { Product } from '../types'
 
 const Schema = z.object({
   name: z
@@ -213,30 +215,32 @@ export function CreateAndUpdate() {
         </header>
 
         {isUpdated ? (
-          <div className="p-10 border border-zinc-200 rounded-[5px] mb-5 mx-10 sm:mx-5">
-            <span className="text-xs mb-5 block -tracking-wide font-bold">
-              CONTROLE DE USO{' '}
-            </span>
+          <>
+            <div className="p-10 border border-zinc-200 rounded-[5px] mb-5 mx-10 sm:mx-5">
+              <span className="text-xs mb-5 block -tracking-wide font-bold">
+                CONTROLE DE USO{' '}
+              </span>
 
-            <Slider.Root
-              className="relative flex items-center select-none touch-none w-full h-5"
-              defaultValue={[values?.usage || 0]}
-              max={watch('quantity')}
-              onValueCommit={(rate) => handleUpdateUsage(rate[0])}
-              step={1}
-              disabled={values?.usage === values?.quantity}
-            >
-              <Slider.Track className="bg-zinc-200 relative grow rounded-full h-[4px]">
-                <Slider.Range className="absolute bg-zinc-200 rounded-full h-full" />
-              </Slider.Track>
-              <Slider.Thumb className="block w-5 h-5 bg-blue-500 border border-blue-800 rounded-[10px] focus:outline-none" />
-            </Slider.Root>
+              <Slider.Root
+                className="relative flex items-center select-none touch-none w-full h-5"
+                defaultValue={[values?.usage || 0]}
+                max={watch('quantity')}
+                onValueCommit={(rate) => handleUpdateUsage(rate[0])}
+                step={1}
+                disabled={values?.usage === values?.quantity}
+              >
+                <Slider.Track className="bg-zinc-200 relative grow rounded-full h-[4px]">
+                  <Slider.Range className="absolute bg-zinc-200 rounded-full h-full" />
+                </Slider.Track>
+                <Slider.Thumb className="block w-5 h-5 bg-blue-500 border border-blue-800 rounded-[10px] focus:outline-none" />
+              </Slider.Root>
 
-            <strong className="text-xs font-medium text-zinc-700 mt-5 block">
-              Você está usando {values?.usage} de {values?.quantity}{' '}
-              {watch('suffix')}
-            </strong>
-          </div>
+              <strong className="text-xs font-medium text-zinc-700 mt-5 block">
+                Você está usando {values?.usage} de {values?.quantity}{' '}
+                {watch('suffix')}
+              </strong>
+            </div>
+          </>
         ) : null}
 
         <form
@@ -346,6 +350,7 @@ export function CreateAndUpdate() {
           </div>
 
           <footer className="flex items-center justify-end space-x-2.5 mt-5 sm:mt-10 sm:col-span-3">
+            <RemoveProduct productId={params.id} />
             <button className="flex items-center justify-center w-full sm:w-[30%] border border-zinc-800 bg-zinc-800 h-10 rounded-[5px]">
               <span className="text-[12px] font-semibold -tracking-wider text-white">
                 {!isIdle ? 'CARREGANDO' : 'ADICIONAR A LISTA DE COMPRAS'}
