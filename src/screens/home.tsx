@@ -1,4 +1,4 @@
-import { ArrowRight, Plus } from 'lucide-react'
+import { ArrowRight, Plus, X } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 
@@ -7,6 +7,8 @@ import { supabase } from '../lib/supabase'
 import type { Product } from '../types'
 
 import 'dayjs/locale/pt-br'
+import { FormEvent, useRef, useState } from 'react'
+import { toast } from '../utils/toast'
 
 export function Home() {
   async function getProducts() {
@@ -19,6 +21,42 @@ export function Home() {
     queryKey: ['get-products-query'],
     queryFn: getProducts,
   })
+
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const [searched, setSearched] = useState<Product[]>([])
+
+  async function search(e: FormEvent) {
+    e.preventDefault()
+
+    const text = inputRef.current?.value
+
+    if (text) {
+      try {
+        const { data } = await supabase
+          .from('products')
+          .select()
+          .textSearch('name', text)
+
+        setSearched(data as Product[])
+
+        toast({
+          message: `Encontrado ${data?.length} produtos`,
+          type: 'success',
+        })
+      } catch (error) {
+        toast({ message: 'Ocorreu algum erro', type: 'error' })
+      }
+    }
+  }
+
+  const products = searched.length > 0 ? searched : data || []
+
+  function clearSearch() {
+    inputRef.current!.value = ''
+
+    setSearched([])
+  }
 
   return (
     <>
@@ -55,13 +93,28 @@ export function Home() {
           <span className="text-[13px] font-medium">DESPENSA</span>
 
           <div className="flex items-center space-x-2">
-            <label>
+            {searched.length > 0 && (
+              <button
+                className="flex items-center space-x-1"
+                onClick={clearSearch}
+              >
+                <X className="h-4 w-4 text-red-500" />
+                <p className="text-[11px] font-semibold hover:text-zinc-600">
+                  LIMPAR PESQUISA
+                </p>
+              </button>
+            )}
+
+            <form action="" onSubmit={search}>
               <input
                 type="text"
+                ref={inputRef}
                 className="h-10 rounded-full border border-zinc-200 w-full text-[13px] font-medium focus:ring-2 focus:ring-blue-200 outline-none focus:border-blue-500 px-3 -tracking-wide"
                 placeholder="Pesquisar por nome"
               />
-            </label>
+
+              <button type="submit" className="invisible"></button>
+            </form>
 
             <Link
               to="/new"
@@ -81,7 +134,7 @@ export function Home() {
             </>
           ) : (
             <>
-              {data?.map((i) => (
+              {products.map((i) => (
                 <li
                   key={i.id}
                   className="group hover:border-zinc-800 cursor-pointer border border-zinc-200 rounded-[5px] p-4 min-h-[100px] w-full relative"
